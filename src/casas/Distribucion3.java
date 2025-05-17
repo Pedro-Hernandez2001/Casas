@@ -700,128 +700,141 @@ public class Distribucion3 implements GLEventListener, MouseListener, MouseMotio
         camara.ajustarZoom(e.getWheelRotation());
     }
 
-    // Implementación de KeyListener para teclas de acceso rápido
-    @Override
-    public void keyPressed(KeyEvent e) {
-        float movSpeed = 0.5f; // Velocidad de movimiento en primera persona
-        
-        // Verificar que tenemos un drawable válido
-        if (currentDrawable == null) {
-            return;
-        }
-        
-        GL2 gl = currentDrawable.getGL().getGL2();
 
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_W:  // Cambiar entre wireframe y sólido con 'W'
-                toggleWireframeMode();
-                break;
-            case KeyEvent.VK_P:  // Cambiar entre primera y tercera persona con 'P'
-                camara.cambiarModo();
-                break;
-            case KeyEvent.VK_L:  // Alternar iluminación con 'L'
-                luz.alternarEstado();
-                break;
-            case KeyEvent.VK_H:  // Alternar visibilidad del personaje con 'H'
-                personaje.alternarVisibilidad();
-                break;
-            case KeyEvent.VK_D:  // Alternar visualización de colisiones con 'D'
-                debugColisiones = !debugColisiones;
-                System.out.println("Detección de colisiones: " + (debugColisiones ? "ACTIVADA" : "DESACTIVADA"));
-                break;
-            case KeyEvent.VK_C:  // Alternar sistema de colisiones con 'C'
-                colisionManager.alternarColisiones();
-                break;
-            case KeyEvent.VK_UP:  // Mover adelante
-                if (camara.isPrimeraPersona()) {
-                    camara.moverAdelante(movSpeed);
-                } else {
-                    personaje.moverAdelante(gl);
-                    System.out.println("Personaje movido adelante: [" + personaje.getX() + ", " + personaje.getY() + ", " + personaje.getZ() + "]");
-                    currentDrawable.display(); // Forzar redibujado
-                }
-                break;
-            case KeyEvent.VK_DOWN:  // Mover atrás
-                if (camara.isPrimeraPersona()) {
-                    camara.moverAtras(movSpeed);
-                } else {
-                    personaje.moverAtras(gl);
-                    System.out.println("Personaje movido atrás: [" + personaje.getX() + ", " + personaje.getY() + ", " + personaje.getZ() + "]");
-                    currentDrawable.display(); // Forzar redibujado
-                }
-                break;
-            case KeyEvent.VK_LEFT:  // Mover izquierda
-                if (camara.isPrimeraPersona()) {
-                    camara.moverIzquierda(movSpeed);
-                } else {
-                    personaje.moverIzquierda(gl);
-                    System.out.println("Personaje movido izquierda: [" + personaje.getX() + ", " + personaje.getY() + ", " + personaje.getZ() + "]");
-                    currentDrawable.display(); // Forzar redibujado
-                }
-                break;
-            case KeyEvent.VK_RIGHT:  // Mover derecha
-                if (camara.isPrimeraPersona()) {
-                    camara.moverDerecha(movSpeed);
-                } else {
-                    personaje.moverDerecha(gl);
-                    System.out.println("Personaje movido derecha: [" + personaje.getX() + ", " + personaje.getY() + ", " + personaje.getZ() + "]");
-                    currentDrawable.display(); // Forzar redibujado
-                }
-                break;
-            case KeyEvent.VK_A:  // Rotar personaje a la izquierda
-                personaje.rotarIzquierda();
-                System.out.println("Personaje rotado izquierda: " + personaje.getRotacion() + " grados");
+    @Override
+public void keyPressed(KeyEvent e) {
+    float movSpeed = 0.5f; // Velocidad de movimiento en primera persona
+    float rotSpeed = 5.0f; // Velocidad de rotación (grados) para las teclas de flecha
+    float alturaEscalon = 0.5f; // Altura del escalón para subir/bajar
+    
+    // Verificar que tenemos un drawable válido
+    if (currentDrawable == null) {
+        return;
+    }
+    
+    GL2 gl = currentDrawable.getGL().getGL2();
+
+    switch (e.getKeyCode()) {
+        case KeyEvent.VK_W:  // Cambiar entre wireframe y sólido con 'W'
+            toggleWireframeMode();
+            break;
+        case KeyEvent.VK_P:  // Cambiar entre primera y tercera persona con 'P'
+            camara.cambiarModo();
+            break;
+        case KeyEvent.VK_L:  // Alternar iluminación con 'L'
+            luz.alternarEstado();
+            break;
+        case KeyEvent.VK_H:  // Alternar visibilidad del personaje con 'H'
+            personaje.alternarVisibilidad();
+            break;
+        case KeyEvent.VK_D:  // Alternar visualización de colisiones con 'D'
+            debugColisiones = !debugColisiones;
+            System.out.println("Detección de colisiones: " + (debugColisiones ? "ACTIVADA" : "DESACTIVADA"));
+            break;
+        case KeyEvent.VK_C:  // Alternar sistema de colisiones con 'C'
+            colisionManager.alternarColisiones();
+            break;
+        case KeyEvent.VK_UP:  // Mover adelante
+            if (camara.isPrimeraPersona()) {
+                camara.moverAdelante(movSpeed);
+            } else {
+                personaje.moverAdelante(gl);
+                System.out.println("Personaje movido adelante: [" + personaje.getX() + ", " + personaje.getY() + ", " + personaje.getZ() + "]");
                 currentDrawable.display(); // Forzar redibujado
-                break;
-            case KeyEvent.VK_S:  // Rotar personaje a la derecha
-                personaje.rotarDerecha();
-                System.out.println("Personaje rotado derecha: " + personaje.getRotacion() + " grados");
+            }
+            break;
+        case KeyEvent.VK_DOWN:  // Mover atrás
+            if (camara.isPrimeraPersona()) {
+                camara.moverAtras(movSpeed);
+            } else {
+                personaje.moverAtras(gl);
+                System.out.println("Personaje movido atrás: [" + personaje.getX() + ", " + personaje.getY() + ", " + personaje.getZ() + "]");
                 currentDrawable.display(); // Forzar redibujado
-                break;
-            case KeyEvent.VK_PLUS:
-            case KeyEvent.VK_ADD:  // Aumentar escala
-                escala.ajustarEscala(1.1f);
-                break;
-            case KeyEvent.VK_MINUS:
-            case KeyEvent.VK_SUBTRACT:  // Disminuir escala
-                escala.ajustarEscala(0.9f);
-                break;
-            // Controles para mover la luz
-            case KeyEvent.VK_NUMPAD8:  // Mover luz hacia arriba
-                luz.moverLuz(0, 1, 0);
-                break;
-            case KeyEvent.VK_NUMPAD2:  // Mover luz hacia abajo
-                luz.moverLuz(0, -1, 0);
-                break;
-            case KeyEvent.VK_NUMPAD4:  // Mover luz a la izquierda
-                luz.moverLuz(-1, 0, 0);
-                break;
-            case KeyEvent.VK_NUMPAD6:  // Mover luz a la derecha
-                luz.moverLuz(1, 0, 0);
-                break;
-            case KeyEvent.VK_NUMPAD5:  // Mover luz hacia adelante
-                luz.moverLuz(0, 0, -1);
-                break;
-            case KeyEvent.VK_NUMPAD0:  // Mover luz hacia atrás
-                luz.moverLuz(0, 0, 1);
-                break;
-            // Tecla R para recargar texturas (seguro)
-            case KeyEvent.VK_R:
-                recargarTexturas = true;  // Establecer bandera para recargar en display()
-                System.out.println("Se recargarán las texturas en el próximo ciclo de renderizado...");
-                break;
-            // Tecla T para mostrar información de texturas
-            case KeyEvent.VK_T:
-                System.out.println("=== INFORMACIÓN DE TEXTURAS ===");
-                for (Map.Entry<String, Material> entry : materiales.entrySet()) {
-                    Material mat = entry.getValue();
-                    System.out.println("Material: " + entry.getKey());
-                    System.out.println("  Textura: " + (mat.textureFile != null ? mat.textureFile : "ninguna"));
-                    System.out.println("  Textura cargada: " + (mat.texture != null ? "SÍ" : "NO"));
-                }
-                break;
-            // Tecla para escanear directorio por archivos MTL/OBJ
-            case KeyEvent.VK_M:
+            }
+            break;
+        case KeyEvent.VK_RIGHT:  // Rotar a la izquierda (en lugar de desplazarse)
+            if (camara.isPrimeraPersona()) {
+                // Usar rotar en lugar de moverIzquierda
+                camara.rotar(-rotSpeed, 0);
+                System.out.println("Cámara rotada a la izquierda");
+            } else {
+                personaje.moverIzquierda(gl);
+                System.out.println("Personaje movido izquierda: [" + personaje.getX() + ", " + personaje.getY() + ", " + personaje.getZ() + "]");
+                currentDrawable.display(); // Forzar redibujado
+            }
+            break;
+        case KeyEvent.VK_LEFT:  // Rotar a la derecha (en lugar de desplazarse)
+            if (camara.isPrimeraPersona()) {
+                // Usar rotar en lugar de moverDerecha
+                camara.rotar(rotSpeed, 0);
+                System.out.println("Cámara rotada a la derecha");
+            } else {
+                personaje.moverDerecha(gl);
+                System.out.println("Personaje movido derecha: [" + personaje.getX() + ", " + personaje.getY() + ", " + personaje.getZ() + "]");
+                currentDrawable.display(); // Forzar redibujado
+            }
+            break;
+        case KeyEvent.VK_A:  // Rotar personaje a la izquierda
+            personaje.rotarIzquierda();
+            System.out.println("Personaje rotado izquierda: " + personaje.getRotacion() + " grados");
+            currentDrawable.display(); // Forzar redibujado
+            break;
+        case KeyEvent.VK_S:  // Rotar personaje a la derecha
+            personaje.rotarDerecha();
+            System.out.println("Personaje rotado derecha: " + personaje.getRotacion() + " grados");
+            currentDrawable.display(); // Forzar redibujado
+            break;
+        case KeyEvent.VK_PLUS:
+        case KeyEvent.VK_ADD:  // Aumentar escala
+            escala.ajustarEscala(1.1f);
+            break;
+        case KeyEvent.VK_MINUS:
+        case KeyEvent.VK_SUBTRACT:  // Disminuir escala
+            escala.ajustarEscala(0.9f);
+            break;
+        // Controles para mover la luz
+        case KeyEvent.VK_NUMPAD8:  // Mover luz hacia arriba
+            luz.moverLuz(0, 1, 0);
+            break;
+        case KeyEvent.VK_NUMPAD2:  // Mover luz hacia abajo
+            luz.moverLuz(0, -1, 0);
+            break;
+        case KeyEvent.VK_NUMPAD4:  // Mover luz a la izquierda
+            luz.moverLuz(-1, 0, 0);
+            break;
+        case KeyEvent.VK_NUMPAD6:  // Mover luz a la derecha
+            luz.moverLuz(1, 0, 0);
+            break;
+        case KeyEvent.VK_NUMPAD5:  // Mover luz hacia adelante
+            luz.moverLuz(0, 0, -1);
+            break;
+        case KeyEvent.VK_NUMPAD0:  // Mover luz hacia atrás
+            luz.moverLuz(0, 0, 1);
+            break;
+        // Tecla R para recargar texturas (seguro)
+        case KeyEvent.VK_R:
+            recargarTexturas = true;  // Establecer bandera para recargar en display()
+            System.out.println("Se recargarán las texturas en el próximo ciclo de renderizado...");
+            break;
+        // Tecla T para mostrar información de texturas
+        case KeyEvent.VK_T:
+            System.out.println("=== INFORMACIÓN DE TEXTURAS ===");
+            for (Map.Entry<String, Material> entry : materiales.entrySet()) {
+                Material mat = entry.getValue();
+                System.out.println("Material: " + entry.getKey());
+                System.out.println("  Textura: " + (mat.textureFile != null ? mat.textureFile : "ninguna"));
+                System.out.println("  Textura cargada: " + (mat.texture != null ? "SÍ" : "NO"));
+            }
+            break;
+        // Tecla M para avanzar una vez (primera persona) o escanear directorio (tercera persona)
+        case KeyEvent.VK_M:
+            if (camara.isPrimeraPersona()) {
+                camara.subirEscalon(alturaEscalon);
+                // Avanzar una vez
+                //camara.moverAdelante(movSpeed);
+                System.out.println("Cámara avanzó una vez");
+            } else {
+                // Mantener la funcionalidad original para modo tercera persona
                 System.out.println("=== ESCANEANDO DIRECTORIO POR ARCHIVOS MTL ===");
                 File dir = new File(dirBase);
                 File[] mtlFiles = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".mtl"));
@@ -842,14 +855,25 @@ public class Distribucion3 implements GLEventListener, MouseListener, MouseMotio
                         System.out.println("Imagen encontrada: " + f.getAbsolutePath());
                     }
                 }
-                break;
-        }
-        
-        // Forzar redibujado después de cualquier cambio
-        if (currentDrawable != null) {
-            currentDrawable.display();
-        }
+            }
+            break;
+        // Tecla N para avanzar dos veces (primera persona)
+        case KeyEvent.VK_N:
+            if (camara.isPrimeraPersona()) {
+                camara.bajarEscalon(alturaEscalon);
+                // Avanzar dos veces
+                //camara.moverAdelante(movSpeed);
+                //camara.moverAdelante(movSpeed);
+                System.out.println("Cámara avanzó dos veces");
+            }
+            break;
     }
+    
+    // Forzar redibujado después de cualquier cambio
+    if (currentDrawable != null) {
+        currentDrawable.display();
+    }
+}
 
     @Override
     public void keyReleased(KeyEvent e) {

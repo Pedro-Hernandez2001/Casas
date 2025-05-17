@@ -127,6 +127,31 @@ public class Camara {
         }
     }
 
+    // Métodos para subir y bajar la cámara (simular escalones)
+    public void subirEscalon(float altura) {
+        if (primeraPersona) {
+            posY += altura;
+        } else {
+            cameraY += altura;
+        }
+    }
+
+    public void bajarEscalon(float altura) {
+        if (primeraPersona) {
+            posY -= altura;
+            // Evitar que la cámara baje del suelo
+            //if (posY < 1.0f) {
+              //  posY = 1.0f;
+            //}
+        } else {
+            cameraY -= altura;
+            // Evitar que la cámara baje del suelo
+            if (cameraY < 0.0f) {
+                cameraY = 0.0f;
+            }
+        }
+    }
+
     // Getters y setters para acceder a las propiedades
     public boolean isPrimeraPersona() {
         return primeraPersona;
